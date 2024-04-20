@@ -23,12 +23,42 @@ class BST {
 		}
 	}
 
+    //logic based sa description ni sir
+    //mo restructure ang whole tree in one go
+    //for me di kaayo sha mo make sense kay why paman
+    //nimo need i check ang every level if balanced ba
+    //if pwede man nimo i balance nalang kada mag insert ka
+    //will further look into its advantages in certain cases
+    void balance(node *currentNode){
+        if(!currentNode) return;
+        
+        int leftHeight = -1, rightHeight = -1;
+        node *currLeft = currentNode->left;
+        node *currRight = currentNode->right;
+
+        if(!currLeft && !currRight) balance(currentNode->parent);
+
+        if(currLeft) leftHeight = currLeft->height();
+        if(currRight) rightHeight = currRight->height();
+
+        if(abs(leftHeight - rightHeight) > 1){
+            restructure(currentNode);
+        }
+
+        balance(currentNode->parent);
+    }
+
+    // TODO perform post-processing by checking for violation after insertion
+    // from the node inserted (or from its parent) until the root
 	node* insert(int num) {
 		node* n = tree->getRoot();
 		if (n == NULL) {
 			return tree->addRoot(num);
 		}
-		return insert_node(n, num);
+		
+        node *res = insert_node(n, num);
+        balance(res->parent);
+        return res;
 	}
 
 	node* insert_node(node* n, int num) {
@@ -53,8 +83,54 @@ class BST {
 		}
 	}
 
+
+    // TODO perform post-processing by checking for violation after deletion
+    // from the parent of the node removed until the root
     bool remove(int num) {
-        return remove_node(tree->getRoot(), num);
+        //naay special case, if i remove ang root
+        //since pa-up man ta, di jud to ma automatically re-balance
+        //need nako og remove nga function nga mo return sa parent sa 
+        //na remove na node
+
+        //node *nodeToRemove = search2(num);
+        //if(!nodeToRemove) return false; //wa nakit an
+        //bool res = remove_node(tree->getRoot(), num);
+
+        node *par = remove_node(num, tree->getRoot());
+        balance(par);
+        return par == nullptr;
+    }
+
+    //mo handle sa case where giremove ang root
+    //overloaded method sa original ni sir
+    //returns the parent of the removed node
+    node *remove_node(int num, node *n){
+        if (n == NULL) {
+			return nullptr; //meaning wa nakit an if null
+		}
+        
+		if (n->elem == num) {
+            node *par = nullptr;
+            if (n->left && n->right) {
+                node* r = n->right;
+                while (r->left) {
+                    r = r->left;
+                }
+
+                par = r->parent;
+                int rem = tree->remove(r);
+                n->elem = rem;
+            } else {
+                par = n->parent;
+    			tree->remove(n);
+            }
+            return par;
+		}
+		if (num > n->elem) {
+			return remove_node(num, n->right);
+		} else {
+			return remove_node(num, n->left);
+		}
     }
 
 	bool remove_node(node* n, int num) {
@@ -81,22 +157,21 @@ class BST {
 		}
 	}
 
-    // GIVEN the grandparent (or z), find the parent (or y), and the child (or x).
     bool restructure(node* gp) {
         node* par; // parent
         // TODO find parent
         node *gpLeft = gp->left;
         node *gpRight = gp->right;
-        int gpLeftHeight;
         int gpRightHeight;
+        int gpLeftHeight;
 
-        if(!gpLeft && gpRight) {
+        if(!gpLeft && gpRight){
             par = gpRight;
         }else if(gpLeft && !gpRight){
             par = gpLeft;
         }else{
-            gpLeftHeight = gpLeft->height();
             gpRightHeight = gpRight->height();
+            gpLeftHeight = gpLeft->height();
 
             if(gpLeftHeight > gpRightHeight){
                 par = gpLeft;
@@ -115,16 +190,16 @@ class BST {
         // TODO find child
         node *parLeft = par->left;
         node *parRight = par->right;
-        int parLeftHeight;
+        int parLeftHeight; 
         int parRightHeight;
 
-        if(!parLeft && parRight) {
+        if(!parLeft && parRight){
             child = parRight;
         }else if(parLeft && !parRight){
             child = parLeft;
         }else{
             parLeftHeight = parLeft->height();
-            parRightHeight = gpRight->height();
+            parRightHeight = parRight->height();
 
             if(parLeftHeight > parRightHeight){
                 child = parLeft;
@@ -153,7 +228,7 @@ class BST {
         //   y
         //    \
         //     x
-        if (gtop_right && ptoc_right) { 
+        if (gtop_right && ptoc_right) {
             // TODO call to either zigleft or zigright or both
             cout << "ZIGLEFT" << endl;
             zigleft(par);
