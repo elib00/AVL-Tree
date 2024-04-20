@@ -144,7 +144,7 @@ class MyBinaryTree : public BinaryTree {
 
     // TODO copy your completed zigright here
     void zigright(node* curr) {
-    node *par = curr->parent;
+        node *par = curr->parent;
         node *grandPar = par->parent;
         node *rightChild = curr->right;
         par->left = rightChild;

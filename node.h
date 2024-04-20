@@ -1,3 +1,6 @@
+#include <algorithm>
+using namespace std;
+
 struct node {
     node* parent;
     node* right;
@@ -9,5 +12,17 @@ struct node {
         if(!right && !left){
             return 0;
         }
+
+        int l = 0, r = 0;
+
+        if(left){
+            l = left->height();
+        }
+
+        if(right){
+            r = right->height();
+        }
+
+        return max(l, r) + 1;
     }
 };

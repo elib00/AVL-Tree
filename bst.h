@@ -85,6 +85,25 @@ class BST {
     bool restructure(node* gp) {
         node* par; // parent
         // TODO find parent
+        node *gpLeft = gp->left;
+        node *gpRight = gp->right;
+        int gpLeftHeight;
+        int gpRightHeight;
+
+        if(!gpLeft && gpRight) {
+            par = gpRight;
+        }else if(gpLeft && !gpRight){
+            par = gpLeft;
+        }else{
+            gpLeftHeight = gpLeft->height();
+            gpRightHeight = gpRight->height();
+
+            if(gpLeftHeight > gpRightHeight){
+                par = gpLeft;
+            }else{
+                par = gpRight;
+            }
+        }
 
         // This is an indicator of the placement of grandparent to parent (gtop)
         bool gtop_right = false;
@@ -94,6 +113,31 @@ class BST {
 
         node* child;
         // TODO find child
+        node *parLeft = par->left;
+        node *parRight = par->right;
+        int parLeftHeight;
+        int parRightHeight;
+
+        if(!parLeft && parRight) {
+            child = parRight;
+        }else if(parLeft && !parRight){
+            child = parLeft;
+        }else{
+            parLeftHeight = parLeft->height();
+            parRightHeight = gpRight->height();
+
+            if(parLeftHeight > parRightHeight){
+                child = parLeft;
+            }else if(parLeftHeight < parRightHeight){
+                child = parRight;
+            }else{
+                if(gtop_right){
+                    child = parRight;
+                }else{
+                    child = parLeft;
+                }
+            }
+        }
 
         // This is an indicator of the placement of parent to child (ptoc)
         bool ptoc_right = false;
@@ -111,6 +155,8 @@ class BST {
         //     x
         if (gtop_right && ptoc_right) {
             // TODO call to either zigleft or zigright or both
+            cout << "ZIGLEFT" << endl;
+            zigleft(par);
         }
 
         // z
@@ -120,6 +166,9 @@ class BST {
         //   x
         else if (gtop_right && !ptoc_right) {
             // TODO call to either zigleft or zigright or both
+            cout << "ZIGZAGLEFT" << endl;
+            zigright(child);
+            zigleft(child);
         }
 
         //     z
@@ -129,6 +178,8 @@ class BST {
         // x
         else if (!gtop_right && !ptoc_right) {
             // TODO call to either zigleft or zigright or both
+            cout << "ZIGRIGHT" << endl;
+            zigright(par);
         }
 
         //      z
@@ -138,6 +189,9 @@ class BST {
         //    x
         else {
             // TODO call to either zigleft or zigright or both
+            cout << "ZIGZAGRIGHT" << endl;
+            zigleft(child);
+            zigright(child);
         }
 
         return true;
