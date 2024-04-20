@@ -153,7 +153,7 @@ class BST {
         //   y
         //    \
         //     x
-        if (gtop_right && ptoc_right) {
+        if (gtop_right && ptoc_right) { 
             // TODO call to either zigleft or zigright or both
             cout << "ZIGLEFT" << endl;
             zigleft(par);
