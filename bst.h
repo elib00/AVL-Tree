@@ -98,7 +98,7 @@ class BST {
 
         node *par = remove_node(num, tree->getRoot());
         balance(par);
-        return par == nullptr;
+        return par != nullptr;
     }
 
     //mo handle sa case where giremove ang root
